@@ -245,4 +245,81 @@ fun roman(n: Int): String = TODO()
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun russian(n: Int): String = TODO()
+
+private val dig1 = arrayOf(
+    arrayOf(
+        "одна",
+        "две",
+        "три",
+        "четыре",
+        "пять",
+        "шесть",
+        "семь",
+        "восемь",
+        "девять"
+    ), arrayOf("один", "два")
+)
+
+private val dig10 = arrayOf(
+    "десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать",
+    "пятнадцать", "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать"
+)
+private val dig20 = arrayOf(
+    "двадцать", "тридцать", "сорок", "пятьдесят",
+    "шестьдесят", "семьдесят", "восемьдесят", "девяносто"
+)
+private val dig100 = arrayOf(
+    "сто", "двести", "триста", "четыреста", "пятьсот",
+    "шестьсот", "семьсот", "восемьсот", "девятьсот"
+)
+private val leword = arrayOf(
+    arrayOf("", "", "", "0"),
+    arrayOf("", "", "", "1"),
+    arrayOf("тысяча", "тысячи", "тысяч", "0"),
+    arrayOf("миллион", "миллиона", "миллионов", "1"),
+    arrayOf("миллиард", "миллиарда", "миллиардов", "1"),
+    arrayOf("триллион", "триллиона", "триллионов", "1")
+)
+
+fun russian(n: Int): String {
+    val num = n.toLong()
+    return num2words(num, 1)
+
+}
+
+fun num2words(num: Long, level: Int): String {
+    val words = StringBuilder(50)
+    if (num == 0L) words.append("ноль ") //исключительный случай
+    val sex = leword[level][3].indexOf("1") + 1 //не красиво конечно, но работает
+    val h = (num % 1000).toInt() //текущий трехзначный сегмент
+    var d = h / 100 //цифра сотен
+    if (d > 0) words.append(dig100[d - 1]).append(" ")
+    var n = h % 100
+    d = n / 10 //цифра десятков
+    n %= 10 //цифра единиц
+    when (d) {
+        0 -> {
+        }
+        1 -> words.append(dig10[n]).append(" ")
+        else -> words.append(dig20[d - 2]).append(" ")
+    }
+    if (d == 1) n = 0 //при двузначном остатке от 10 до 19, цифра едициц не должна учитываться
+    when (n) {
+        0 -> {
+        }
+        1, 2 -> words.append(dig1[sex][n - 1]).append(" ")
+        else -> words.append(dig1[0][n - 1]).append(" ")
+    }
+    when (n) {
+        1 -> words.append(leword[level][0])
+        2, 3, 4 -> words.append(leword[level][1])
+        else -> if (h != 0 || h == 0 && level == 1) //если трехзначный сегмент = 0, то добавлять нужно только "рублей"
+            words.append(leword[level][2])
+    }
+    val nextnum = num / 1000
+    return if (nextnum > 0) {
+        (num2words(nextnum, level + 1) + " " + words.toString()).trim { it <= ' ' }
+    } else {
+        words.toString().trim { it <= ' ' }
+    }
+}
