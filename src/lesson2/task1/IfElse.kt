@@ -63,7 +63,13 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String = TODO()
+fun ageDescription(age: Int): String {
+    return when {
+        age % 100 in 5..20 || age % 10 == 0 || age % 10 in 5..9 -> "$age лет"
+        age % 10 == 2 || age % 10 == 3 || age % 10 == 4 -> "$age года"
+        else -> "$age год"
+    }
+}
 
 /**
  * Простая
@@ -76,7 +82,20 @@ fun timeForHalfWay(
     t1: Double, v1: Double,
     t2: Double, v2: Double,
     t3: Double, v3: Double
-): Double = TODO()
+): Double {
+    val first = t1 * v1
+    val second = t2 * v2
+    val third = t3 * v3
+    val km = first + second + third
+    val center = km / 2
+
+    return when {
+        center <= first -> center / v1
+        center >= first + second -> t1 + t2 + (center - first - second) / v3
+        else -> t1 + (center - first) / v2
+    }
+
+}
 
 /**
  * Простая
@@ -91,23 +110,45 @@ fun whichRookThreatens(
     kingX: Int, kingY: Int,
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
-): Int = TODO()
+): Int {
+    var count = 0
+    if (kingX == rookX1 || kingY == rookY1)
+        count = 1
+    if (kingX == rookX2 || kingY == rookY2)
+        if (count != 1)
+            count = 2
+        else count = 3
 
-/**
- * Простая
- *
- * На шахматной доске стоят черный король и белые ладья и слон
- * (ладья бьет по горизонтали и вертикали, слон — по диагоналям).
- * Проверить, есть ли угроза королю и если есть, то от кого именно.
- * Вернуть 0, если угрозы нет, 1, если угроза только от ладьи, 2, если только от слона,
- * и 3, если угроза есть и от ладьи и от слона.
- * Считать, что ладья и слон не могут загораживать друг друга.
- */
+    return count
+
+    /**
+     * Простая
+     *
+     * На шахматной доске стоят черный король и белые ладья и слон
+     * (ладья бьет по горизонтали и вертикали, слон — по диагоналям).
+     * Проверить, есть ли угроза королю и если есть, то от кого именно.
+     * Вернуть 0, если угрозы нет, 1, если угроза только от ладьи, 2, если только от слона,
+     * и 3, если угроза есть и от ладьи и от слона.
+     * Считать, что ладья и слон не могут загораживать друг друга.
+     */
+
+}
+
 fun rookOrBishopThreatens(
     kingX: Int, kingY: Int,
     rookX: Int, rookY: Int,
     bishopX: Int, bishopY: Int
-): Int = TODO()
+): Int {
+    var count = 0
+    if (kingX == rookX || kingY == rookY)
+        count = 1
+    if (kingX + kingY == bishopX + bishopY || ((bishopX + bishopY) - (kingX + kingY)) % 2 == 0)
+        if (count != 1)
+            count = 2
+        else count = 3
+
+    return count
+}
 
 /**
  * Простая
@@ -117,7 +158,13 @@ fun rookOrBishopThreatens(
  * прямоугольным (вернуть 1) или тупоугольным (вернуть 2).
  * Если такой треугольник не существует, вернуть -1.
  */
-fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
+fun triangleKind(a: Double, b: Double, c: Double): Int =
+    when {
+        a + b <= c || a + c <= b || b + c <= a -> -1
+        a * a + b * b > c * c && a * a + c * c > b * b && c * c + b * b > a * a -> 0
+        a * a + b * b == c * c || a * a + c * c == b * b || c * c + b * b == a * a -> 1
+        else -> 2
+    }
 
 /**
  * Средняя
@@ -127,4 +174,12 @@ fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = TODO()
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
+    if (c in a..b)
+        if (d < b) return d - c
+        else return b - c
+    else if (a in c..d)
+        if (d <= b) return d - a
+        else return b - a
+    else return -1
+}
